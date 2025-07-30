@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ماشین‌حساب سود و زیان محصول گلخانه‌ای</title>
+
+  <style>
+    body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            direction: rtl;
+            text-align: right;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .form-section {
+            background-color: #f3e5f5; /* بنفش روشن */
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            border: 1px solid #ce93d8;
+        }
+        .form-section h3 {
+            color: #6a1b9a;
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-align: right;
+            border-bottom: 1px dashed #ab47bc;
+            padding-bottom: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="number"],
+        input[type="text"], /* برای نام پروژه */
+        select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+            text-align: left; /* برای نمایش بهتر اعداد */
+            direction: ltr; /* برای نمایش بهتر اعداد */
+        }
+        button {
+            background-color: #9c27b0; /* بنفش تیره */
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #7b1fa2;
+        }
+        .results, .suggestions {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #ede7f6; /* بنفش خیلی روشن */
+            border: 1px solid #d1c4e9;
+            border-radius: 5px;
+        }
+        .results p, .suggestions p, .suggestions ul {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            text-align: justify;
+        }
+        .results strong {
+            color: #4527a0; /* بنفش تیره تر */
+        }
+        .suggestions strong {
+            color: #6a1b9a;
+        }
+        .note {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 10px;
+            text-align: justify;
+        }
+        .profit {
+            color: #28a745; /* سبز برای سود */
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .loss {
+            color: #dc3545; /* قرمز برای زیان */
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+  </style>
+
+  
+</head>
+<body>
+  <div class="container">
+        <h1>ماشین‌حساب سود و زیان محصول گلخانه‌ای</h1>
+
+        <form id="greenhouseProfitLossForm">
+            <div class="form-section">
+                <h3>الف) اطلاعات کلی پروژه</h3>
+                <div class="form-group">
+                    <label for="projectName">نام پروژه/محصول:</label>
+                    <input type="text" id="projectName" name="projectName" placeholder="مثال: کشت گوجه فرنگی، دوره پاییز">
+                </div>
+                <div class="form-group">
+                    <label for="cropType">نوع محصول:</label>
+                    <select id="cropType" name="cropType" required>
+                        <option value="">انتخاب کنید...</option>
+                        <option value="tomato">گوجه فرنگی</option>
+                        <option value="cucumber">خیار</option>
+                        <option value="bell_pepper">فلفل دلمه‌ای</option>
+                        <option value="strawberry">توت فرنگی</option>
+                        <option value="lettuce">کاهو</option>
+                        <option value="flower">گل‌های شاخه‌بریده</option>
+                        <option value="other">سایر</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="greenhouseArea">مساحت زیر کشت (متر مربع):</label>
+                    <input type="number" id="greenhouseArea" name="greenhouseArea" min="1" placeholder="مثال: 1000" required>
+                </div>
+                <div class="form-group">
+                    <label for="plantsPerSqM">تعداد بوته در هر متر مربع:</label>
+                    <input type="number" id="plantsPerSqM" name="plantsPerSqM" step="0.1" min="0" placeholder="مثال: 2.5">
+                </div>
+                <div class="form-group">
+                    <label for="expectedYieldPerPlant">عملکرد مورد انتظار هر بوته (کیلوگرم/بوته):</label>
+                    <input type="number" id="expectedYieldPerPlant" name="expectedYieldPerPlant" step="0.1" min="0" placeholder="مثال: 20 (برای گوجه)">
+                    <p class="note">این مقدار برای کل دوره برداشت است.</p>
+                </div>
+                <div class="form-group">
+                    <label for="expectedWastageRate">درصد ضایعات/ضایعات محصول مورد انتظار (%):</label>
+                    <input type="number" id="expectedWastageRate" name="expectedWastageRate" step="0.1" min="0" max="100" placeholder="مثال: 5 (پنج درصد)">
+                    <p class="note">این درصد شامل محصولاتی است که غیر قابل فروش هستند.</p>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>ب) هزینه‌های متغیر (برای کل دوره کشت)</h3>
+                <div class="form-group">
+                    <label for="seedlingCostPerPlant">هزینه خرید نشا/بذر برای هر بوته (ریال/تومان):</label>
+                    <input type="number" id="seedlingCostPerPlant" name="seedlingCostPerPlant" min="0" placeholder="مثال: 5000" required>
+                </div>
+                <div class="form-group">
+                    <label for="fertilizerCostTotal">هزینه کل کود و مواد مغذی (ریال/تومان):</label>
+                    <input type="number" id="fertilizerCostTotal" name="fertilizerCostTotal" min="0" placeholder="مثال: 20000000">
+                    <p class="note">این مبلغ را می‌توانید از **ماشین‌حساب مصرف کود و مواد مغذی** (قبلی) به دست آورید.</p>
+                </div>
+                <div class="form-group">
+                    <label for="waterEnergyCostTotal">هزینه کل آب و انرژی (گرمایش، روشنایی، سرمایش) (ریال/تومان):</label>
+                    <input type="number" id="waterEnergyCostTotal" name="waterEnergyCostTotal" min="0" placeholder="مثال: 30000000">
+                    <p class="note">این مبلغ را می‌توانید از **ماشین‌حساب مصرف آب و انرژی** (قبلی) به دست آورید.</p>
+                </div>
+                <div class="form-group">
+                    <label for="pesticideDiseaseControlCost">هزینه سموم، آفت‌کش‌ها و کنترل بیماری (ریال/تومان):</label>
+                    <input type="number" id="pesticideDiseaseControlCost" name="pesticideDiseaseControlCost" min="0" placeholder="مثال: 5000000">
+                </div>
+                <div class="form-group">
+                    <label for="laborCost">هزینه نیروی انسانی (کاشت، داشت، برداشت) (ریال/تومان):</label>
+                    <input type="number" id="laborCost" name="laborCost" min="0" placeholder="مثal: 40000000">
+                </div>
+                <div class="form-group">
+                    <label for="packagingTransportationCost">هزینه بسته‌بندی و حمل و نقل (ریال/تومان):</label>
+                    <input type="number" id="packagingTransportationCost" name="packagingTransportationCost" min="0" placeholder="مثال: 15000000">
+                </div>
+                <div class="form-group">
+                    <label for="otherVariableCosts">سایر هزینه‌های متغیر متفرقه (ریال/تومان):</label>
+                    <input type="number" id="otherVariableCosts" name="otherVariableCosts" min="0" placeholder="مثال: 2000000">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>ج) هزینه‌های ثابت (برای کل دوره کشت)</h3>
+                <div class="form-group">
+                    <label for="rentDepreciationCost">اجاره/استهلاک سازه و تجهیزات گلخانه (ریال/تومان):</label>
+                    <input type="number" id="rentDepreciationCost" name="rentDepreciationCost" min="0" placeholder="مثال: 10000000">
+                    <p class="note">اگر گلخانه اجاره‌ای است، هزینه اجاره. اگر مالک هستید، استهلاک سالیانه تقسیم بر تعداد دوره‌های کشت در سال.</p>
+                </div>
+                <div class="form-group">
+                    <label for="insuranceLicensesCost">هزینه بیمه، مجوزها و عوارض (ریال/تومان):</label>
+                    <input type="number" id="insuranceLicensesCost" name="insuranceLicensesCost" min="0" placeholder="مثال: 1000000">
+                </div>
+                <div class="form-group">
+                    <label for="otherFixedCosts">سایر هزینه‌های ثابت متفرقه (ریال/تومان):</label>
+                    <input type="number" id="otherFixedCosts" name="otherFixedCosts" min="0" placeholder="مثال: 500000">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>د) درآمدها</h3>
+                <div class="form-group">
+                    <label for="sellingPricePerKg">قیمت فروش مورد انتظار هر کیلوگرم محصول (ریال/تومان):</label>
+                    <input type="number" id="sellingPricePerKg" name="sellingPricePerKg" step="0.1" min="0" placeholder="مثال: 50000" required>
+                </div>
+            </div>
+
+            <button type="submit">محاسبه سود و زیان</button>
+        </form>
+
+        <div class="results" id="profitLossResults">
+            <h2>نتایج برآورد اقتصادی پروژه گلخانه‌ای</h2>
+            <p><strong>نام پروژه:</strong> <span id="displayProjectName">--</span></p>
+            <p><strong>مساحت گلخانه:</strong> <span id="displayGreenhouseArea">--</span> متر مربع</p>
+            <hr>
+            <p><strong>تعداد کل بوته‌ها:</strong> <span id="totalPlants">--</span> بوته</p>
+            <p><strong>کل محصول تولیدی (ناخالص):</strong> <span id="grossProduct">--</span> کیلوگرم</p>
+            <p><strong>کل محصول قابل فروش (خالص):</strong> <span id="netProduct">--</span> کیلوگرم</p>
+            <hr>
+            <p><strong>کل هزینه‌های متغیر:</strong> <span id="totalVariableCosts">--</span> ریال/تومان</p>
+            <p><strong>کل هزینه‌های ثابت:</strong> <span id="totalFixedCosts">--</span> ریال/تومان</p>
+            <p><strong>جمع کل هزینه‌های پروژه:</strong> <span id="totalProjectCosts">--</span> ریال/تومان</p>
+            <hr>
+            <p><strong>کل درآمد پیش‌بینی شده:</strong> <span id="totalRevenue">--</span> ریال/تومان</p>
+            <hr>
+            <p><strong>سود/زیان خالص پروژه:</strong> <span id="netProfitLoss">--</span></p>
+            <p><strong>نقطه سربه‌سر (کیلوگرم تولید):</strong> <span id="breakEvenKg">--</span> کیلوگرم</p>
+            <p><strong>نقطه سربه‌سر (مساحت زیر کشت):</strong> <span id="breakEvenArea">--</span> متر مربع</p>
+            <p class="note">توجه: این نتایج تخمینی هستند و باید با دقت و بر اساس داده‌های واقعی مزرعه شما به‌روزرسانی شوند. نوسانات بازار، بیماری‌ها، آفات و عوامل پیش‌بینی نشده می‌توانند بر سودآوری تأثیر بگذارند.</p>
+        </div>
+
+        <div class="suggestions" id="financialSuggestions">
+            <h2>توضیحات و پیشنهادات مالی</h2>
+            <h3>مدیریت هزینه‌ها و افزایش درآمد در گلخانه:</h3>
+            <ul>
+                <li><strong>تحلیل حساسیت:</strong> بررسی کنید که تغییر در قیمت فروش یا عملکرد چه تأثیری بر سودآوری دارد.</li>
+                <li><strong>کاهش ضایعات:</strong> بهبود مدیریت برداشت، بسته‌بندی و حمل و نقل برای به حداقل رساندن محصول غیر قابل فروش.</li>
+                <li><strong>افزایش عملکرد:</strong> بهینه‌سازی شرایط محیطی (دما، رطوبت، نور)، تغذیه و سلامت گیاه برای دستیابی به حداکثر عملکرد ممکن.</li>
+                <li><strong>بازاریابی و فروش:</strong> شناسایی بازارهای هدف، ایجاد ارتباط با خریداران عمده و بررسی روش‌های مختلف فروش (مستقیم، واسطه) برای دستیابی به بهترین قیمت.</li>
+                <li><strong>کنترل آفات و بیماری‌ها:</strong> اجرای برنامه‌های IPM (مدیریت یکپارچه آفات) برای کاهش نیاز به سموم گران‌قیمت و جلوگیری از خسارات محصول.</li>
+                <li><strong>اتوماسیون:</strong> سرمایه‌گذاری در سیستم‌های اتوماسیون آبیاری، تغذیه و کنترل اقلیم برای کاهش هزینه‌های نیروی انسانی و افزایش دقت.</li>
+                <li><strong>تنوع محصول:</strong> کشت چند محصول مختلف برای کاهش ریسک و بهره‌برداری بهینه از فضای گلخانه.</li>
+                <li><strong>بهره‌وری انرژی و آب:</strong> به کارگیری راهکارهایی که در ماشین‌حساب قبلی ذکر شد، برای کاهش هزینه‌های عملیاتی.</li>
+            </ul>
+
+            <p class="note">یک طرح کسب و کار دقیق و به‌روزرسانی مداوم داده‌های مالی برای موفقیت پایدار در صنعت گلخانه‌داری ضروری است. همیشه با کارشناسان خبره مشورت کنید.</p>
+        </div>
+    </div>
+
+  <script>
+    document.getElementById('greenhouseProfitLossForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // گرفتن مقادیر ورودی
+            const projectName = document.getElementById('projectName').value || 'پروژه نامشخص';
+            const cropType = document.getElementById('cropType').options[document.getElementById('cropType').selectedIndex].text;
+            const greenhouseArea = parseFloat(document.getElementById('greenhouseArea').value);
+            const plantsPerSqM = parseFloat(document.getElementById('plantsPerSqM').value) || 0;
+            const expectedYieldPerPlant = parseFloat(document.getElementById('expectedYieldPerPlant').value);
+            const expectedWastageRate = parseFloat(document.getElementById('expectedWastageRate').value) || 0;
+
+            const seedlingCostPerPlant = parseFloat(document.getElementById('seedlingCostPerPlant').value) || 0;
+            const fertilizerCostTotal = parseFloat(document.getElementById('fertilizerCostTotal').value) || 0;
+            const waterEnergyCostTotal = parseFloat(document.getElementById('waterEnergyCostTotal').value) || 0;
+            const pesticideDiseaseControlCost = parseFloat(document.getElementById('pesticideDiseaseControlCost').value) || 0;
+            const laborCost = parseFloat(document.getElementById('laborCost').value) || 0;
+            const packagingTransportationCost = parseFloat(document.getElementById('packagingTransportationCost').value) || 0;
+            const otherVariableCosts = parseFloat(document.getElementById('otherVariableCosts').value) || 0;
+
+            const rentDepreciationCost = parseFloat(document.getElementById('rentDepreciationCost').value) || 0;
+            const insuranceLicensesCost = parseFloat(document.getElementById('insuranceLicensesCost').value) || 0;
+            const otherFixedCosts = parseFloat(document.getElementById('otherFixedCosts').value) || 0;
+
+            const sellingPricePerKg = parseFloat(document.getElementById('sellingPricePerKg').value);
+
+            // اعتبارسنجی اولیه
+            if (isNaN(greenhouseArea) || isNaN(expectedYieldPerPlant) || isNaN(sellingPricePerKg) ||
+                greenhouseArea <= 0 || expectedYieldPerPlant < 0 || sellingPricePerKg < 0) {
+                alert('لطفاً فیلدهای ضروری (مساحت گلخانه، عملکرد مورد انتظار و قیمت فروش) را با مقادیر عددی معتبر پر کنید.');
+                return;
+            }
+
+            // --- محاسبات ---
+
+            // 1. تعداد کل بوته‌ها
+            const totalPlants = greenhouseArea * plantsPerSqM;
+
+            // 2. کل محصول تولیدی (ناخالص و خالص)
+            const grossProduct = totalPlants * expectedYieldPerPlant;
+            const netProduct = grossProduct * (1 - (expectedWastageRate / 100));
+
+            // 3. هزینه‌ها
+            const totalSeedlingCost = totalPlants * seedlingCostPerPlant;
+            const totalVariableCosts = totalSeedlingCost + fertilizerCostTotal + waterEnergyCostTotal + 
+                                       pesticideDiseaseControlCost + laborCost + packagingTransportationCost + 
+                                       otherVariableCosts;
+            
+            const totalFixedCosts = rentDepreciationCost + insuranceLicensesCost + otherFixedCosts;
+
+            const totalProjectCosts = totalVariableCosts + totalFixedCosts;
+
+            // 4. درآمد
+            const totalRevenue = netProduct * sellingPricePerKg;
+
+            // 5. سود/زیان خالص
+            const netProfitLoss = totalRevenue - totalProjectCosts;
+
+            // 6. نقطه سربه‌سر (Break-Even Point)
+            let breakEvenKg = 0;
+            let breakEvenArea = 0;
+
+            if (grossProduct > 0) { // Check to prevent division by zero
+                const variableCostPerKg = totalVariableCosts / grossProduct;
+                if (sellingPricePerKg > variableCostPerKg) {
+                    breakEvenKg = totalFixedCosts / (sellingPricePerKg - variableCostPerKg);
+                } else {
+                    breakEvenKg = 'پروژه با زیان (قیمت فروش کمتر یا مساوی هزینه متغیر واحد)';
+                }
+            } else {
+                breakEvenKg = 'محاسبه عملکرد ناخالص ممکن نیست';
+            }
+            
+            if (greenhouseArea > 0) { // Check to prevent division by zero
+                const revenuePerSqM = (expectedYieldPerPlant * plantsPerSqM * (1 - (expectedWastageRate / 100))) * sellingPricePerKg;
+                const variableCostPerSqM = totalVariableCosts / greenhouseArea;
+                
+                if (revenuePerSqM > variableCostPerSqM) {
+                    breakEvenArea = totalFixedCosts / (revenuePerSqM - variableCostPerSqM);
+                } else {
+                    breakEvenArea = 'پروژه با زیان (درآمد هر متر مربع کمتر یا مساوی هزینه متغیر هر متر مربع)';
+                }
+            } else {
+                breakEvenArea = 'مساحت گلخانه باید بیشتر از صفر باشد';
+            }
+
+
+            // --- نمایش نتایج ---
+            document.getElementById('displayProjectName').textContent = projectName;
+            document.getElementById('displayGreenhouseArea').textContent = greenhouseArea.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            
+            document.getElementById('totalPlants').textContent = totalPlants.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            document.getElementById('grossProduct').textContent = grossProduct.toLocaleString('fa-IR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('netProduct').textContent = netProduct.toLocaleString('fa-IR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            document.getElementById('totalVariableCosts').textContent = totalVariableCosts.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            document.getElementById('totalFixedCosts').textContent = totalFixedCosts.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            document.getElementById('totalProjectCosts').textContent = totalProjectCosts.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            
+            document.getElementById('totalRevenue').textContent = totalRevenue.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            
+            const netProfitLossElement = document.getElementById('netProfitLoss');
+            if (netProfitLoss > 0) {
+                netProfitLossElement.className = 'profit';
+                netProfitLossElement.textContent = 'سود: ' + netProfitLoss.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' ریال/تومان';
+            } else if (netProfitLoss < 0) {
+                netProfitLossElement.className = 'loss';
+                netProfitLossElement.textContent = 'زیان: ' + Math.abs(netProfitLoss).toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' ریال/تومان';
+            } else {
+                netProfitLossElement.className = ''; 
+                netProfitLossElement.textContent = 'نقطه سربه‌سر (سود/زیان صفر): ' + netProfitLoss.toLocaleString('fa-IR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' ریال/تومان';
+            }
+
+            document.getElementById('breakEvenKg').textContent = (typeof breakEvenKg === 'number') ? breakEvenKg.toLocaleString('fa-IR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : breakEvenKg;
+            document.getElementById('breakEvenArea').textContent = (typeof breakEvenArea === 'number') ? breakEvenArea.toLocaleString('fa-IR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : breakEvenArea;
+        });
+  </script>
+</body>
+</html>
